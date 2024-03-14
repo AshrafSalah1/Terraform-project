@@ -74,32 +74,23 @@ resource "alicloud_instance" "frontend" {
   key_name                   = alicloud_ecs_key_pair.publickey.key_pair_name
 
 
+  provisioner "file" {
+    source      = "frontend-config.sh"
+    destination = "frontend-config.sh"
+
+    connection {
+      type        = "ssh"
+      user        = "root"
+      private_key = file("./id_rsa")
+      host        = self.public_ip
+    }
+
+  }
+
   provisioner "remote-exec" {
     inline = [
-      # Update system packages
-      "sudo apt-get update",
-      # Install Cloud Monitor Agent
-      "ARGUS_VERSION=3.5.10 /bin/bash -c \"$(curl -s https://cms-agent-us-east-1.oss-us-east-1-internal.aliyuncs.com/Argus/agent_install_ecs-1.7.sh)\""
-      #   # Install Git
-      #   "sudo apt-get install git -y",
-
-      #   # Install Node.js 18.x
-      #   "curl -s https://deb.nodesource.com/setup_18.x | sudo bash -",
-      #   "sudo apt-get install nodejs -y",
-
-      #   # Clone Uptime Kuma repository
-      #   "git clone https://github.com/louislam/uptime-kuma.git && cd uptime-kuma",
-
-      #   # Setup Uptime Kuma
-      #   "npm run setup",
-
-      #   # Install PM2 globally and PM2 log rotate plugin
-      #   "sudo npm install pm2 -g && pm2 install pm2-logrotate",
-
-      #   # Start Uptime Kuma server using PM2
-      #   "pm2 start server/server.js --name uptime-kuma",
-      #   # add it to startup
-      #   "pm2 save && pm2 startup"
+      "chmod +x frontend-config.sh", # Ensure script is executable
+      "./frontend-config.sh"          # Run the script
     ]
 
     connection {
@@ -128,27 +119,23 @@ resource "alicloud_instance" "backend" {
   key_name                   = alicloud_ecs_key_pair.publickey.key_pair_name
 
 
+  provisioner "file" {
+    source      = "backend-config.sh"
+    destination = "backend-config.sh"
+
+    connection {
+      type        = "ssh"
+      user        = "root"
+      private_key = file("./id_rsa")
+      host        = self.public_ip
+    }
+
+  }
+
   provisioner "remote-exec" {
     inline = [
-      # Update system packages
-      "sudo apt-get update",
-      # Install Cloud Monitor Agent
-      "ARGUS_VERSION=3.5.10 /bin/bash -c \"$(curl -s https://cms-agent-us-east-1.oss-us-east-1-internal.aliyuncs.com/Argus/agent_install_ecs-1.7.sh)\""
-      # "sudo apt install software-properties-common -y",
-      # "sudo add-apt-repository ppa:ondrej/php -y",
-      # "sudo apt install php8.1 php8.1-mbstring php8.1-gettext php8.1-zip php8.1-fpm php8.1-curl php8.1-mysql php8.1-gd php8.1-cgi php8.1-soap php8.1-sqlite3 php8.1-xml php8.1-redis php8.1-bcmath php8.1-imagick php8.1-intl -y",
-      # "sudo apt install git composer -y",
-      # "sudo apt install nginx -y",
-      # "cd /var/www/html",
-      # "sudo rm -rf *",
-      # "sudo git clone https://github.com/AshrafSalah1/laravel.git",
-      # "cd laravel/",
-      # "sudo composer install",
-      # "sudo chown -R www-data:www-data /var/www/html",
-      # "sudo cp .env.example .env",
-      # "php artisan key:generate",
-      # "sudo nano /etc/nginx/sites-available/laravel.conf",
-      # "sudo ln -s /etc/nginx/sites-available/laravel.conf /etc/nginx/sites-enabled/laravel.conf"
+      "chmod +x backend-config.sh", # Ensure script is executable
+      "./backend-config.sh"          # Run the script
     ]
 
     connection {
@@ -250,9 +237,9 @@ resource "alicloud_db_instance" "dbinstance" {
 
 # Create DB account
 resource "alicloud_db_account" "account" {
-  db_instance_id = alicloud_db_instance.dbinstance.id
-  account_name        = "testuser"
-  account_password    = var.dbaccount_password
+  db_instance_id   = alicloud_db_instance.dbinstance.id
+  account_name     = "testuser"
+  account_password = var.dbaccount_password
 }
 
 # Create DB
