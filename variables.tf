@@ -39,9 +39,9 @@ variable "dbaccount_password" {
 }
 
 variable "access_key" {
-  default = "LTAI5tFhFtPpKUs5SEUUHEFi"
+  default = "To be replaced"
 }
 
 variable "secret_key" {
-  default = "9Hv0IETDsKgn0rUpTjExyEsTkU09lM"
+  default = "To be replaced"
 }
